@@ -1,0 +1,6 @@
+telegram:
+  telegram_api_id: '11'
+  telegram_hash: '111'
+
+mongodb:
+  url: "mongodb://127.0.0.1:27017"
