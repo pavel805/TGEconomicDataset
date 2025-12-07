@@ -12,6 +12,10 @@ pyrogram_app.py
 The download process will resume if it was stopped once.
 ## Add economic data to the messages
 process_messages.py
+
+# Restoring the dataset from an archive 
+C:\Program Files\MongoDB\Tools\100\bin>mongorestore.exe --gzip  --verbose --archive=D:\dump\
+
 # Collections:
 1. chats - a list of Telegram channels.
 2. collection with messages - exact collection name is stored in the chats collection.
