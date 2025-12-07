@@ -1,5 +1,5 @@
 # TGEconomicDataset
-# Telegram messages downloader and processor
+# Telegram messages dataset, downloader and processor
 ## Configuration
 Open the config.yaml file and put mongodb connection string, telegram_api_key and hash.
 ## Create a channel list
