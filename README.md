@@ -1,4 +1,5 @@
 # TGEconomicDataset
+TGEconomicDataset, a new dataset containing more than 2.9 million mes-sages from the most popular Telegram channels in the field of economics in Russian, as well as a labeled mixture of these channels. The mixture is formed to test various methods of solving the problem of continuous authentication, which is of particular interest due to the need for organizations and companies to rely on data posted on social media.
 # Telegram messages dataset, downloader and processor
 ## Configuration
 Open the config.yaml file and put mongodb connection string, telegram_api_key and hash.
