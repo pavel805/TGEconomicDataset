@@ -21,5 +21,5 @@ C:\Program Files\MongoDB\Tools\100\bin>mongorestore.exe --gzip  --verbose --arch
 1. chats - a list of Telegram channels.
 2. collection with messages - exact collection name is stored in the chats collection.
 
-#Data example
+# Data example
 Examples of synthesized collections of types 1 and 2, presented as JSON files exported from a MongoDB database, can be viewed at the following link 
