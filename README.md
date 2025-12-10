@@ -23,3 +23,5 @@ C:\Program Files\MongoDB\Tools\100\bin>mongorestore.exe --gzip  --verbose --arch
 
 # Data example
 Examples of synthesized collections of types 1 and 2, presented as JSON files exported from a MongoDB database, can be viewed at the following link 
+[type 1](https://github.com/pavel805/TGEconomicDataset/blob/main/dumps/tg8_headlines_for_traders_and_newssmartlab_10_size_5000_type1.json)
+[type 2](https://github.com/pavel805/TGEconomicDataset/blob/main/dumps/tg8.headlines_for_traders_and_newssmartlab_10_type2.json)
