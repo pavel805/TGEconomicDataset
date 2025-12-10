@@ -4,20 +4,17 @@ import pandas as pd
 
 
 
-#with open('config.yaml', 'r') as stream:
-#    cfg = yaml.safe_load(stream)
-#dbName="tg8"
-#collName="msgs"
-#client = MongoClient(cfg["mongodb"]['url'])
-#db = client[dbName]
-#coll = db[collName]
+##### MONGO DB atributes
+import yaml
+with open('config.yaml', 'r') as stream:  
+    cfg = yaml.safe_load(stream)
 
-
-
-uri = "mongodb://127.0.0.1:27017/" # MongoClient(cfg["mongodb"]['url']) # локальное соединение
+uri = cfg["mongodb"]['url']# local connection or "mongodb://127.0.0.1:27017"
 user = "" 
 pasword = ""
-bd = "tg8"
+bd =  cfg["mongodb"]['db_name'] # or 'tg8'
+######### 
+
 
 
 # Selects collections with a similar average word count for creating synthesized datasets.
@@ -118,6 +115,7 @@ def create_inj(count = 20, neighbours=8, min_col_length = 500, main_collection_s
 # injected_chats - this stores which infected datasets have been synthesized and added to MongoDB.
 # size - how many entries to take from the main collection. If size=0, the entire dataset is used.
 # percent - percentage of injected documents.
+# type 1 collections see manuscript
 def make_injected_size( chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats", min_percent = 10,   size=5000,  percent=10):
     client = MongoClient(uri)
     db = client[bd]
@@ -222,10 +220,11 @@ def remove_all_injected( chats_to_inject="to_inject", injected_chats ="injected_
     
     for chats in db[injected_chats].find(): 
       collection = chats["title"]
+      #print(collection )
       db[collection].delete_many({})
       db[collection].drop()
     db[injected_chats].delete_many({})
-    #db[chats_to_inject].delete_many({})  
+    db[chats_to_inject].delete_many({})  
 ##########################################################################3 
     
 
@@ -236,7 +235,7 @@ def remove_all_injected( chats_to_inject="to_inject", injected_chats ="injected_
 # chats_to_inject - source data about pairs of collections to be mixed
 # injected_chats - collection where the result is recorded, indicating that the artificial collection has been synthesized
 # percent_inj - percentage of documents marked as outliers (may vary if Telegram channels differ significantly in posting frequency)
- 
+# type 2 collections see manuscript
 def make_injected_datacoinside(chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats",   percent_inj=10):
     min_percent = 8
     max_percent = 15
@@ -331,8 +330,8 @@ def make_injected_datacoinside(chat = "chats", chats_to_inject="to_inject", inje
 
 
 
-
-create_inj(count = 20, neighbours=10)
-make_injected_datacoinside()
-make_injected_size(size=5000)
-#remove_all_injected()
+# call nessesary functions
+create_inj(count = 20, neighbours=10) # create set of pairs of collections and write them to collection 'to_inject'
+make_injected_datacoinside() # Create synthesized collections (type 2 = method 2) based on the data from the to_inject collection 
+make_injected_size(size=5000) # Create synthesized collections (type 1 = method 1) based on the data from the to_inject collection 
+#remove_all_injected() # remove all synthesized collections
