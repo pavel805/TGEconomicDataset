@@ -3,8 +3,6 @@ TGEconomicDataset, a new dataset containing more than 2.9 million mes-sages from
 # Telegram messages dataset, downloader and processor
 ## Configuration
 Open the config.yaml file and put mongodb connection string, telegram_api_key and hash.
-## Create a channel list
-channel_load.py
 ## Download
 pyrogram_app.py
 The download process will resume if it was stopped once.
