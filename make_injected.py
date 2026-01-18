@@ -116,13 +116,18 @@ def create_inj(count = 20, neighbours=8, min_col_length = 500, main_collection_s
 # size - how many entries to take from the main collection. If size=0, the entire dataset is used.
 # percent - percentage of injected documents.
 # type 1 collections see manuscript
-def make_injected_size( chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats", min_percent = 10,   size=5000,  percent=10):
+# total_dataset_count - The number of collections that will be created. If you set it to -1, the maximum possible number of collections will be created based on the source data in the to_inject collection.
+def make_injected_size( chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats", min_percent = 10,   size=5000,  percent=10, total_dataset_count=30):
     client = MongoClient(uri)
     db = client[bd]
     if chats_to_inject not in db.list_collection_names():
        return
     
+    max_counter = 1
     for chats in db[chats_to_inject].find():
+          
+      if total_dataset_count != -1 and max_counter > total_dataset_count:
+         return
           
       collection_main = chats["collection_main"]
       collection_inj = chats["collection_inj"] 
@@ -139,10 +144,11 @@ def make_injected_size( chat = "chats", chats_to_inject="to_inject", injected_ch
        
       count_by_percent = int(count_m*percent/100) #  How many entries to take from the second collection to simulate an outlier.
       if (size>0):
-          if (count_m < size or count_i< size*percent):
+          if (count_m < int(size*(1-percent/100)) or count_i< int(size*percent/100)):
              continue # Collections are skipped if they do not have a sufficient volume.
           count_m = int(size*(1-percent/100))
           count_i = int(round(size*percent/100))
+          count_by_percent = count_i 
       else:       
         # If there are not enough outlier entries for injection, the available entries are used and the percentage is adjusted.
         if count_by_percent > count_i:
@@ -210,6 +216,7 @@ def make_injected_size( chat = "chats", chats_to_inject="to_inject", injected_ch
         i = i + 1
       #  ---
       db[injected_chats].insert_one({"collection":result_collection, "title":result_collection, "Source":"inj", "type": "type1", "collection_main":collection_main, "collection_inj":collection_inj, "percent":percent, "avg_word_main": chats['avg_main'] , "avg_word_inj": chats["avg_inj"], "main_count": count_m, "injected_count":count_i , "size":size})
+      max_counter = max_counter + 1
 ####################################################################################
 
 
@@ -224,7 +231,7 @@ def remove_all_injected( chats_to_inject="to_inject", injected_chats ="injected_
       db[collection].delete_many({})
       db[collection].drop()
     db[injected_chats].delete_many({})
-    db[chats_to_inject].delete_many({})  
+   #  db[chats_to_inject].delete_many({})  # recomment to remove the source of collection pairs 
 ##########################################################################3 
     
 
@@ -236,17 +243,23 @@ def remove_all_injected( chats_to_inject="to_inject", injected_chats ="injected_
 # injected_chats - collection where the result is recorded, indicating that the artificial collection has been synthesized
 # percent_inj - percentage of documents marked as outliers (may vary if Telegram channels differ significantly in posting frequency)
 # type 2 collections see manuscript
-def make_injected_datacoinside(chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats",   percent_inj=10):
+# total_dataset_count = 30 by default, total number of collection that creates by the method. If total_dataset_count = -1 than create full possible number based on chats_to_inject data 
+def make_injected_datacoinside(chat = "chats", chats_to_inject="to_inject", injected_chats ="injected_chats",   percent_inj=10, total_dataset_count = 30):
     min_percent = 8
     max_percent = 15
  
- 
+    
+
     client = MongoClient(uri)
     db = client[bd]
     if chats_to_inject not in db.list_collection_names():
        return
    
+    max_counter = 1
     for chats in db[chats_to_inject].find(): 
+      
+      if total_dataset_count != -1 and max_counter > total_dataset_count:
+         return
       
       percent=percent_inj
       id_inj = chats["_id"]
@@ -324,8 +337,8 @@ def make_injected_datacoinside(chat = "chats", chats_to_inject="to_inject", inje
       # Record that the collection has been added ---
       
       db[injected_chats].insert_one({"collection":result_collection, "title":result_collection, "Source":"inj", "type": "type2", "collection_main":collection_main, "collection_inj":collection_inj, "percent":percent1,  "main_count": count_m-count_deleted, "injected_count":count_by_percent , "size":count_m+count_by_percent-count_deleted, "avg_word_main": chats['avg_main'] , "avg_word_inj": chats["avg_inj"]})
-    
-
+      max_counter = max_counter + 1
+      
  
 
 
